@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import { ChatLobby } from './components/ChatLobby';
 import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
+import { ResponseErrorComponent } from './components/ResponseError';
 
 
 declare module '@mui/material/styles' {
@@ -30,7 +31,7 @@ const theme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#4F359B'
+      main: '#CC3F0C'
     },
     secondary: {
       main: '#302056',
@@ -49,7 +50,7 @@ const theme = createTheme({
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <WsClientProvider>
+      <WsClientProvider>        
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<ChatLobby />} />

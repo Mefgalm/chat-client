@@ -1,14 +1,13 @@
 import { Button, Grid, TextField } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
-import { ReactElement, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import { WebSocketContext } from "../websocket/WsClient";
 import { Message, SetNickname } from "../websocket/Responses";
 import { Message as MessageComponent } from "./Message";
 import { styled } from "@mui/system";
-import { WindowSharp } from "@mui/icons-material";
 import Online from "./Online";
-import Rooms from "./Rooms";
+import Rooms from "./rooms/Rooms";
 
 const MessagesComponent = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -89,7 +88,7 @@ export function Chat() {
         setMessage('');
     }
 
-    return (
+    return (        
         <Grid sx={{
             backgroundColor: 'background.default',
             display: 'flex',

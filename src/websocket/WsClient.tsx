@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
-import { Message, ResponseType, SetNickname, Response, GetId, Online, Offline, GlobalOnline, RoomCreated, RoomJoined } from "./Responses";
+import { Message, ResponseType, SetNickname, Response, GetId, Online, Offline, GlobalOnline, RoomCreated, RoomJoined, ReponseError as ResponseError } from "./Responses";
 import { RequestType, Request } from './Requests';
+import { Alert } from "@mui/material";
+import { ResponseErrorComponent } from "../components/ResponseError";
 
 
 type WebSocketClient = {
@@ -29,6 +31,9 @@ type WebSocketClient = {
 
     addRoomJoinedHandler: (handlerId: string, handler: ((response: RoomJoined) => void)) => void
     removeRoomJoinedHandler: (handlerId: string) => void
+
+    addErrorHandler: (handlerId: string, handler: ((response: ResponseError) => void)) => void
+    removeErrorHandler: (handlerId: string) => void
 
     send: <T>(messageType: RequestType, data: T) => void
 }
@@ -83,6 +88,12 @@ const defaultWebSocketClient: WebSocketClient = {
     },
     removeRoomJoinedHandler: function (handlerId: string): void {
         throw new Error("Function not implemented.");
+    },
+    addErrorHandler: function (handlerId: string, handler: (response: ResponseError) => void): void {
+        throw new Error("Function not implemented.");
+    },
+    removeErrorHandler: function (handlerId: string): void {
+        throw new Error("Function not implemented.");
     }
 }
 
@@ -98,6 +109,7 @@ export default ({ children }: any) => {
     let onGlobalOnlineHandlers = new Map<string, ((_: GlobalOnline) => void)>();
     let onRoomCreatedHandlers = new Map<string, ((_: RoomCreated) => void)>();
     let onRoomJoinedHandlers = new Map<string, ((_: RoomJoined) => void)>();
+    let onErrorHandlers = new Map<string, ((_: ResponseError) => void)>();
 
     useEffect(() => {
         socket = new WebSocket('ws://localhost:3012')
@@ -148,6 +160,9 @@ export default ({ children }: any) => {
                 break;
             case 'RoomJoined':
                 callHandlers<RoomJoined>(JSON.parse(response.data), onRoomJoinedHandlers);
+                break;
+            case 'Error':
+                callHandlers<ResponseError>(JSON.parse(response.data), onErrorHandlers);
                 break;
         }
     }
@@ -221,6 +236,13 @@ export default ({ children }: any) => {
     const removeRoomJoinedHandler = (handlerId: string) =>
         onRoomJoinedHandlers.delete(handlerId);
 
+    // Error
+    const addErrorHandler = (handlerId: string, handler: ((msg: ResponseError) => void)) =>
+        onErrorHandlers.set(handlerId, handler);
+
+    const removeErrorHandler = (handlerId: string) =>
+        onErrorHandlers.delete(handlerId);
+
     return (
         <WebSocketContext.Provider value={{
             close,
@@ -240,8 +262,11 @@ export default ({ children }: any) => {
             removeRoomCreatedHandler,
             addRoomJoinedHandler,
             removeRoomJoinedHandler,
+            addErrorHandler,
+            removeErrorHandler,
             send
         }}>
+            <ResponseErrorComponent></ResponseErrorComponent>
             {children}
         </WebSocketContext.Provider>);
 }

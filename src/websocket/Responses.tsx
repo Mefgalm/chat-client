@@ -8,6 +8,7 @@ export type ResponseType =
     | 'GlobalOnline'
     | 'RoomCreated'
     | 'RoomJoined'
+    | 'Error'
 
 export type SetNickname = {
     id: string,
@@ -34,6 +35,10 @@ export type UserInfo = {
 
 export type GlobalOnline = {
     users: UserInfo[]
+}
+
+export type ReponseError = {
+    message: string
 }
 
 export type RoomCreated = {
